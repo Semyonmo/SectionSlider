@@ -174,13 +174,3 @@ function SectionSlider(options, undefined) {
         self.resize();
     });
 };
-
-$(document).ready(function () {
-    var sectionSlider = new SectionSlider({
-        elem: ".section-slider",
-        easing: 'easeOutCubic',
-        scrollingSpeed: 1100,
-        menu: ".menu"
-    });
-    sectionSlider.init();
-});
