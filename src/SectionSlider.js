@@ -20,7 +20,8 @@ function SectionSlider(options, undefined) {
         nextSectionsHeight = 0,
         nextSectionsLength = 0,
         prevSectionsHeight = 0,
-        prevSectionsLength = 0;
+        prevSectionsLength = 0,
+        displayedSection = {};
 
     this.init = function () {
         updateSectionHeight();
@@ -39,12 +40,61 @@ function SectionSlider(options, undefined) {
         return document.documentElement.clientHeight;
     }
 
+    function scrollTop() {
+        return window.pageYOffset || document.documentElement.scrollTop;
+    }
+
     function updateSectionHeight() {
         $(elem).css("height", clientHeight() + "px");
     }
 
+    function scrollHappens() {
+        nowSectionDisplay();
+
+        $(displayedSection).addClass('section-active').siblings().removeClass('section-active');
+    }
+
+    function nowSectionDisplay() {
+        var centerScrollPos = scrollTop() + clientHeight() / 2;
+
+        $(elem).each(function () {
+            var positionTop = $(this).offset().top;
+            var positionBottom = positionTop + $(this).height();
+
+            if (centerScrollPos > positionTop && centerScrollPos < positionBottom) {
+                displayedSection = $(this);
+            }
+        });
+    }
+
+    function sectionsParse() {
+        sectionsLengthWithOutAction = 0;
+        sectionsActiveLength = 0;
+        sectionActiveHeight = 0;
+        nextSectionsHeight = 0;
+        nextSectionsLength = 0;
+        prevSectionsHeight = 0;
+        prevSectionsLength = 0;
+
+        $(elem).each(function (index) {
+            if ($(this).hasClass('section-active')) {
+                sectionsLengthWithOutAction = sectionsActiveLength;
+                prevSectionsHeight = sectionActiveHeight;
+                prevSectionsLength = sectionsActiveLength;
+                sectionActiveHeight = parseInt($(this).css('height'));
+                sectionsActiveLength += sectionActiveHeight;
+                nextSectionsHeight = parseInt($(".section-active" + " + " + elem).css('height'));
+                nextSectionsLength = sectionsActiveLength + nextSectionsHeight;
+                return false;
+            } else {
+                sectionActiveHeight = parseInt($(this).css('height'));
+                sectionsActiveLength += sectionActiveHeight;
+            }
+        });
+    }
+
     function upKeyPressed() {
-        keyPressed();
+        sectionsParse();
 
         if (internalScrollState == "bottom" && sectionActiveHeight > clientHeight()) {
             //scrollLargeScreen(localActiveSection, "up");
@@ -62,7 +112,7 @@ function SectionSlider(options, undefined) {
     }
 
     function downKeyPressed() {
-        keyPressed();
+        sectionsParse();
 
         if (internalScrollState == "top" && sectionActiveHeight > clientHeight()) {
             //scrollLargeScreen(localActiveSection);
@@ -118,31 +168,6 @@ function SectionSlider(options, undefined) {
         internalScrollState = "top";
     }
 
-    function keyPressed() {
-        sectionsLengthWithOutAction = 0;
-        sectionsActiveLength = 0;
-        sectionActiveHeight = 0;
-        nextSectionsHeight = 0;
-        nextSectionsLength = 0;
-        prevSectionsHeight = 0;
-        prevSectionsLength = 0;
-
-        $(elem).each(function (index) {
-            if ($(this).hasClass('section-active')) {
-                sectionsLengthWithOutAction = sectionsActiveLength;
-                prevSectionsHeight = sectionActiveHeight;
-                prevSectionsLength = sectionsActiveLength;
-                sectionActiveHeight = parseInt($(this).css('height'));
-                sectionsActiveLength += sectionActiveHeight;
-                nextSectionsHeight = parseInt($(".section-active" + " + " + elem).css('height'));
-                nextSectionsLength = sectionsActiveLength + nextSectionsHeight;
-                return false;
-            } else {
-                sectionActiveHeight = parseInt($(this).css('height'));
-                sectionsActiveLength += sectionActiveHeight;
-            }
-        });
-    }
 
     $(document).keydown(function (e) {
         switch (e.which) {
@@ -151,6 +176,7 @@ function SectionSlider(options, undefined) {
             case 33:
             {
                 upKeyPressed();
+                return false;
                 break;
             }
             //down key press
@@ -158,6 +184,7 @@ function SectionSlider(options, undefined) {
             case 34:
             {
                 downKeyPressed();
+                return false;
                 break;
             }
             default:
@@ -172,5 +199,9 @@ function SectionSlider(options, undefined) {
 
     $(window).bind('orientationchange', function () {
         self.resize();
+    });
+
+    $(window).scroll(function () {
+        scrollHappens();
     });
 };
