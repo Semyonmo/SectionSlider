@@ -1,35 +1,27 @@
 /**
  * Created by semyon on 14.02.14.
  */
-//'use strict';
+'use strict';
 
 function SectionSlider(options, undefined) {
     var self = this,
         elem = options.elem,
-        scrollingSpeed = options.scrollingSpeed,
         easing = options.easing,
         resizeTime = options.resizeTime || 50,
+        activeSelector = options.activeSelector,
         timeoutID = null,
         menu = options.menu,
-        internalScrollState = "top",
+        scrollState = "top",
         scrolledElement = 'html,body',
-        sectionsActiveLength = 0,
-        sectionActiveHeight = 0,
-        sectionsLengthWithOutAction = 0,
         scrollOptions = {},
-        nextSectionsHeight = 0,
-        nextSectionsLength = 0,
-        prevSectionsHeight = 0,
-        prevSectionsLength = 0,
+        sections = {},
         displayedSection = {};
 
     this.init = function () {
         updateSectionHeight();
-        //add active class to first section slide
-        $(elem + ":first").addClass('section-active');
-
-
-        //$(elem).css("background-color","red");
+        if (options.activeFirst) {
+            $(elem + ":first").addClass(activeSelector);
+        }
     };
 
     this.resize = function () {
@@ -45,13 +37,15 @@ function SectionSlider(options, undefined) {
     }
 
     function updateSectionHeight() {
-        $(elem).css("height", clientHeight() + "px");
+        if (options.sectionsFullScreen) {
+            $(elem).css("height", clientHeight() + "px");
+        }
     }
 
     function scrollHappens() {
         nowSectionDisplay();
 
-        $(displayedSection).addClass('section-active').siblings().removeClass('section-active');
+        $(displayedSection).addClass(activeSelector).siblings().removeClass(activeSelector);
     }
 
     function nowSectionDisplay() {
@@ -68,27 +62,40 @@ function SectionSlider(options, undefined) {
     }
 
     function sectionsParse() {
-        sectionsLengthWithOutAction = 0;
-        sectionsActiveLength = 0;
-        sectionActiveHeight = 0;
-        nextSectionsHeight = 0;
-        nextSectionsLength = 0;
-        prevSectionsHeight = 0;
-        prevSectionsLength = 0;
+        sections= {};
+        sections = {
+            active: {
+                height: 0,
+                length: 0
+            }
+        };
 
-        $(elem).each(function (index) {
-            if ($(this).hasClass('section-active')) {
-                sectionsLengthWithOutAction = sectionsActiveLength;
-                prevSectionsHeight = sectionActiveHeight;
-                prevSectionsLength = sectionsActiveLength;
-                sectionActiveHeight = parseInt($(this).css('height'));
-                sectionsActiveLength += sectionActiveHeight;
-                nextSectionsHeight = parseInt($(".section-active" + " + " + elem).css('height'));
-                nextSectionsLength = sectionsActiveLength + nextSectionsHeight;
+        $(elem).each(function () {
+            if ($(this).hasClass(activeSelector)) {
+                sections.prev = {
+                    height: sections.active.height,
+                    length: sections.active.length
+                };
+                sections.active = {
+                    height: parseInt($(this).css('height')),
+                    length: $(this).offset().top
+                }
+                sections.next = $("."+ activeSelector + " + " + elem);
+                if (sections.next.length != 0) {
+                    sections.next = {
+                        height: parseInt($("." + activeSelector + " + " + elem).css('height')),
+                        length: $("."+ activeSelector + " + " + elem).offset().top
+                    }
+                } else {
+                    sections.next.height = sections.active.height;
+                    sections.next.length = sections.active.length;
+                }
                 return false;
             } else {
-                sectionActiveHeight = parseInt($(this).css('height'));
-                sectionsActiveLength += sectionActiveHeight;
+                sections.active = {
+                    height: parseInt($(this).css('height')),
+                    length: $(this).offset().top
+                }
             }
         });
     }
@@ -96,13 +103,13 @@ function SectionSlider(options, undefined) {
     function upKeyPressed() {
         sectionsParse();
 
-        if (internalScrollState == "bottom" && sectionActiveHeight > clientHeight()) {
-            //scrollLargeScreen(localActiveSection, "up");
+        if (scrollState == "bottom" && sections.active.height > clientHeight()) {
+            scrollLargeScreenUp();
             return false;
         }
 
-        if (internalScrollState == "bottom" || internalScrollState == "top") {
-            if (prevSectionsHeight <= clientHeight()) {
+        if (scrollState == "bottom" || scrollState == "top") {
+            if (sections.prev.height <= clientHeight()) {
                 nextSectionCenterUp();
             } else {
                 nextSectionTopUp();
@@ -114,13 +121,13 @@ function SectionSlider(options, undefined) {
     function downKeyPressed() {
         sectionsParse();
 
-        if (internalScrollState == "top" && sectionActiveHeight > clientHeight()) {
-            //scrollLargeScreen(localActiveSection);
+        if (scrollState == "top" && sections.active.height > clientHeight()) {
+            scrollLargeScreenDown();
             return false;
         }
 
-        if (internalScrollState == "bottom" || internalScrollState == "top") {
-            if (nextSectionsHeight <= clientHeight()) {
+        if (scrollState == "bottom" || scrollState == "top") {
+            if (sections.next.height <= clientHeight()) {
                 nextSectionCenterDown();
             } else {
                 nextSectionTopDown();
@@ -129,43 +136,60 @@ function SectionSlider(options, undefined) {
         }
     }
 
+    function scrollLargeScreenDown() {
+        if (scrollState == "top") {
+            internalScrollBottom();
+            return;
+        }
+    }
+
+    function scrollLargeScreenUp() {
+        if (scrollState == "bottom") {
+            internalScrollTop();
+            return;
+        }
+    }
+
     function internalScrollTop() {
-        scrollTo(sectionsLengtsWithOutAction);
-        internalScrollState = "top";
+        scrollTo(sections.active.length, options.scrollSpeed/3);
+        scrollState = "top";
     }
 
     function internalScrollBottom() {
-        scrollTo(sectionsActiveLength - clientHeight());
-        internalScrollState = "bottom";
+        scrollTo(sections.active.length + sections.active.height - clientHeight(), options.scrollSpeed/3);
+        scrollState = "bottom";
     }
 
-    function scrollTo(scrollValue) {
+    function scrollTo(scrollValue, scrollSpeed) {
+        scrollSpeed = scrollSpeed || options.scrollSpeed;
         scrollOptions['scrollTop'] = scrollValue + "px";
         $(scrolledElement).stop().animate(
             scrollOptions
-            , scrollingSpeed / 3, easing);
+            , scrollSpeed, easing);
     }
 
     function nextSectionCenterUp() {
-        var value = prevSectionsLength - (prevSectionsHeight / 2) - (clientHeight() / 2);
+        var value = sections.prev.length + (sections.prev.height / 2) - (clientHeight() / 2);
         scrollTo(value);
-        internalScrollState = "top";
+        scrollState = "top";
     }
 
     function nextSectionCenterDown() {
-        var value = nextSectionsLength - (nextSectionsHeight / 2) - (clientHeight() / 2);
+        var value = sections.next.length + (sections.next.height / 2) - (clientHeight() / 2);
         scrollTo(value);
-        internalScrollState = "top";
+        scrollState = "top";
     }
 
     function nextSectionTopUp() {
-        nextSectionCenterUp();
-        internalScrollState = "top";
+        var value = sections.prev.length;
+        scrollTo(value);
+        scrollState = "top";
     }
 
     function nextSectionTopDown() {
-        nextSectionCenterDown();
-        internalScrollState = "top";
+        var value = sections.next.length;
+        scrollTo(value);
+        scrollState = "top";
     }
 
 

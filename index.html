@@ -47,16 +47,16 @@
 <section class="section-slider three"></section>
 <section class="section-slider four"></section>
 <section class="section-slider five"></section>
-<section class="section-slider one"></section>
-<section class="section-slider two"></section>
-<section class="section-slider three"></section>
 <script>
     $(document).ready(function () {
         var sectionSlider = new SectionSlider({
             elem: ".section-slider",
             easing: 'linear',
-            scrollingSpeed: 400,
-            menu: ".menu"
+            scrollSpeed: 400,
+            menu: ".menu",
+            sectionsFullScreen: true,
+            activeFirst: true,
+            activeSelector: "section-active"
         });
         sectionSlider.init();
     });
