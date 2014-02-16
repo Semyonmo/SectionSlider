@@ -2,9 +2,9 @@
 <html>
 <head>
     <title>sectionSLider</title>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css"/>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
     <script src="src/SectionSlider.js"></script>
     <style>
         body {
@@ -13,32 +13,27 @@
         }
 
         .section-slider {
-            height: 350px !important;
+
         }
 
         .one {
-            background: url(img/wallpaper-1.jpg) 100% 100% no-repeat; /* Добавляем фон */
-            background-size: cover; /* Масштабируем фон */
+            background: #98ffe9;
         }
 
         .two {
-            background: url(img/wallpaper-2.jpg) 100% 100% no-repeat; /* Добавляем фон */
-            background-size: cover; /* Масштабируем фон */
+            background: #d488ff;
         }
 
         .three {
-            background: url(img/wallpaper-3.jpg) 100% 100% no-repeat; /* Добавляем фон */
-            background-size: cover; /* Масштабируем фон */
+            background: #fff89b;
         }
 
         .four {
-            background: url(img/wallpaper-4.jpg) 100% 100% no-repeat; /* Добавляем фон */
-            background-size: cover; /* Масштабируем фон */
+            background: #98b3ff;
         }
 
         .five {
-            background: url(img/wallpaper-5.jpg) 100% 100% no-repeat; /* Добавляем фон */
-            background-size: cover; /* Масштабируем фон */
+            background: #ffaeb1;
         }
 
         .menu {
@@ -48,12 +43,7 @@
 </head>
 <body>
 <ul class="menu">
-    <li><a href="">one</a></li>
-    <li><a href="">two</a></li>
-    <li><a href="">three</a></li>
-    <li><a href="">four</a></li>
-    <li><a href="">five</a></li>
-    <button onclick="sectionSlider.scrollTo('#ololo')">Hello</button>
+    <button onclick="sectionSlider.scrollTo('#three')">Go to three</button>
 </ul>
 <section class="section-slider section-active one"></section>
 <section class="section-slider two"></section>
@@ -62,7 +52,7 @@
 <section class="section-slider five"></section>
 <section class="section-slider one"></section>
 <section class="section-slider two"></section>
-<section id="ololo" class="section-slider three"></section>
+<section id="three" class="section-slider three"></section>
 <section class="section-slider four"></section>
 <section class="section-slider five"></section>
 <script>
@@ -70,8 +60,8 @@
     $(document).ready(function () {
             sectionSlider = new SectionSlider({
             elem: ".section-slider",
-            easing: 'easeInOutCirc',
-            scrollSpeed: 100,
+            easing: 'easeOutCubic',
+            scrollSpeed: 600,
             menu: ".menu",
             sectionsFullScreen: true,
             activeFirst: true,
