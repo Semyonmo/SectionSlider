@@ -10,18 +10,17 @@ function SectionSlider(options, undefined) {
         resizeTime = options.resizeTime || 50,
         activeSelector = options.activeSelector,
         timeoutID = null,
+        scrollToValue = 0,
         menu = options.menu,
         scrollState = "top",
         scrolledElement = 'html,body',
         scrollOptions = {},
-        sections = {},
+        section = {},
+        scrollWay = "",
         displayedSection = {};
 
     this.init = function () {
         updateSectionHeight();
-        if (options.activeFirst) {
-            $(elem + ":first").addClass(activeSelector);
-        }
     };
 
     this.resize = function () {
@@ -43,12 +42,11 @@ function SectionSlider(options, undefined) {
     }
 
     function scrollHappens() {
-        nowSectionDisplay();
-
+        sectionShows();
         $(displayedSection).addClass(activeSelector).siblings().removeClass(activeSelector);
     }
 
-    function nowSectionDisplay() {
+    function sectionShows() {
         var centerScrollPos = scrollTop() + clientHeight() / 2;
 
         $(elem).each(function () {
@@ -62,105 +60,92 @@ function SectionSlider(options, undefined) {
     }
 
     function sectionsParse() {
-        sections= {};
-        sections = {
-            active: {
-                height: 0,
-                length: 0
-            }
-        };
-
-        $(elem).each(function () {
-            if ($(this).hasClass(activeSelector)) {
-                sections.prev = {
-                    height: sections.active.height,
-                    length: sections.active.length
-                };
-                sections.active = {
-                    height: parseInt($(this).css('height')),
-                    length: $(this).offset().top
+        section = {};
+        var sections = $(elem);
+        for (var i = 0; i < sections.length; i++) {
+            if ($(sections[i]).hasClass(activeSelector)) {
+                section = {
+                    height: parseInt($(sections[i]).css('height')),
+                    offset: $(sections[i]).offset()
                 }
-                sections.next = $("."+ activeSelector + " + " + elem);
-                if (sections.next.length != 0) {
-                    sections.next = {
-                        height: parseInt($("." + activeSelector + " + " + elem).css('height')),
-                        length: $("."+ activeSelector + " + " + elem).offset().top
-                    }
-                } else {
-                    sections.next.height = sections.active.height;
-                    sections.next.length = sections.active.length;
+                section.prev = {
+                    height: parseInt($(sections[i - 1]).css('height')) || 0,
+                    offset: $(sections[i - 1]).offset() || 0
+                };
+                section.next = {
+                    height: parseInt($(sections[i + 1]).css('height')) || section.height,
+                    offset: $(sections[i + 1]).offset() || section.offset
                 }
                 return false;
-            } else {
-                sections.active = {
-                    height: parseInt($(this).css('height')),
-                    length: $(this).offset().top
-                }
             }
-        });
+        }
     }
 
-    function upKeyPressed() {
+    self.scrollPrev = function () {
         sectionsParse();
 
-        if (scrollState == "bottom" && sections.active.height > clientHeight()) {
-            scrollLargeScreenUp();
+        scrollWay = "prev";
+
+        if (scrollState == "bottom" && section.height > clientHeight()) {
+            scrollInternalPrev();
             return false;
         }
 
         if (scrollState == "bottom" || scrollState == "top") {
-            if (sections.prev.height <= clientHeight()) {
-                nextSectionCenterUp();
+            if (section.prev.height <= clientHeight()) {
+                scrollCenterPrev();
             } else {
-                nextSectionTopUp();
+                scrollTopPrev();
             }
             return false;
         }
     }
 
-    function downKeyPressed() {
+    self.scrollNext = function () {
         sectionsParse();
 
-        if (scrollState == "top" && sections.active.height > clientHeight()) {
-            scrollLargeScreenDown();
+        scrollWay = "next";
+
+        if (scrollState == "top" && section.height > clientHeight()) {
+            scrollInternalNext();
             return false;
         }
 
         if (scrollState == "bottom" || scrollState == "top") {
-            if (sections.next.height <= clientHeight()) {
-                nextSectionCenterDown();
+            if (section.next.height <= clientHeight()) {
+                scrollCenterNext();
             } else {
-                nextSectionTopDown();
+                scrollTopNext();
             }
             return false;
         }
     }
 
-    function scrollLargeScreenDown() {
-        if (scrollState == "top") {
-            internalScrollBottom();
-            return;
-        }
-    }
-
-    function scrollLargeScreenUp() {
+    function scrollInternalPrev() {
         if (scrollState == "bottom") {
-            internalScrollTop();
-            return;
+            scrollTo(section.offset.top, options.scrollSpeed / 3);
+            scrollState = "top";
         }
     }
 
-    function internalScrollTop() {
-        scrollTo(sections.active.length, options.scrollSpeed/3);
-        scrollState = "top";
+    function scrollInternalNext() {
+        if (scrollState == "top") {
+            scrollTo(section.offset.top + section.height - clientHeight(), options.scrollSpeed / 3);
+            scrollState = "bottom";
+        }
     }
 
-    function internalScrollBottom() {
-        scrollTo(sections.active.length + sections.active.height - clientHeight(), options.scrollSpeed/3);
-        scrollState = "bottom";
-    }
-
-    function scrollTo(scrollValue, scrollSpeed) {
+    function scrollTo(scrollValue, scrollSpeed, way) {
+        if (scrollValue == scrollToValue) {
+            return false;
+        }
+        if (scrollWay == "next" && scrollValue < scrollTop()) {
+            return false;
+        }
+        if (scrollWay == "prev" && scrollValue > scrollTop()) {
+            return false;
+        }
+        scrollToValue = scrollValue;
         scrollSpeed = scrollSpeed || options.scrollSpeed;
         scrollOptions['scrollTop'] = scrollValue + "px";
         $(scrolledElement).stop().animate(
@@ -168,26 +153,26 @@ function SectionSlider(options, undefined) {
             , scrollSpeed, easing);
     }
 
-    function nextSectionCenterUp() {
-        var value = sections.prev.length + (sections.prev.height / 2) - (clientHeight() / 2);
+    function scrollCenterPrev() {
+        var value = section.prev.offset.top + (section.prev.height / 2) - (clientHeight() / 2);
         scrollTo(value);
         scrollState = "top";
     }
 
-    function nextSectionCenterDown() {
-        var value = sections.next.length + (sections.next.height / 2) - (clientHeight() / 2);
+    function scrollCenterNext() {
+        var value = section.next.offset.top + (section.next.height / 2) - (clientHeight() / 2);
         scrollTo(value);
         scrollState = "top";
     }
 
-    function nextSectionTopUp() {
-        var value = sections.prev.length;
+    function scrollTopPrev() {
+        var value = section.prev.offset.top;
         scrollTo(value);
         scrollState = "top";
     }
 
-    function nextSectionTopDown() {
-        var value = sections.next.length;
+    function scrollTopNext() {
+        var value = section.next.offset.top;
         scrollTo(value);
         scrollState = "top";
     }
@@ -199,7 +184,7 @@ function SectionSlider(options, undefined) {
             case 38:
             case 33:
             {
-                upKeyPressed();
+                self.scrollPrev();
                 return false;
                 break;
             }
@@ -207,7 +192,7 @@ function SectionSlider(options, undefined) {
             case 40:
             case 34:
             {
-                downKeyPressed();
+                self.scrollNext();
                 return false;
                 break;
             }
