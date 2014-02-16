@@ -13,7 +13,7 @@
         }
 
         .section-slider {
-
+            height: 600px;
         }
 
         .small {
@@ -86,15 +86,15 @@
 <script>
     var sectionSlider;
     $(document).ready(function () {
-            sectionSlider = new SectionSlider({
+        sectionSlider({
             elem: ".section-slider",
             easing: 'easeOutCubic',
             scrollSpeed: 600,
+            resizeDelay: 50,
             menu: ".menu",
             sectionsFullScreen: true,
-            activeFirst: true,
             activeSelector: "section-active"
-        });
+        })
         sectionSlider.init();
     });
 </script>
