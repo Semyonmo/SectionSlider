@@ -46,6 +46,12 @@ function SectionSlider(options, undefined) {
         $(displayedSection).addClass(activeSelector).siblings().removeClass(activeSelector);
     }
 
+    this.scrollTo = function (selector) {
+        sectionShows();
+        $(selector).addClass(activeSelector).siblings().removeClass(activeSelector);
+        self.scrollActive();
+    }
+
     function sectionShows() {
         var centerScrollPos = scrollTop() + clientHeight() / 2;
 
@@ -60,7 +66,6 @@ function SectionSlider(options, undefined) {
     }
 
     function sectionsParse() {
-        section = {};
         var sections = $(elem);
         for (var i = 0; i < sections.length; i++) {
             if ($(sections[i]).hasClass(activeSelector)) {
@@ -81,7 +86,7 @@ function SectionSlider(options, undefined) {
         }
     }
 
-    self.scrollPrev = function () {
+    this.scrollPrev = function () {
         sectionsParse();
 
         scrollWay = "prev";
@@ -101,7 +106,23 @@ function SectionSlider(options, undefined) {
         }
     }
 
-    self.scrollNext = function () {
+    this.scrollActive = function () {
+        sectionsParse();
+
+        scrollWay = "active";
+
+        if (section.height > clientHeight()) {
+            scrollTopActive();
+        }
+
+        if (section.height <= clientHeight()) {
+            scrollCenterActive();
+        }
+
+        scrollToValue = 0;
+    }
+
+    this.scrollNext = function () {
         sectionsParse();
 
         scrollWay = "next";
@@ -135,22 +156,24 @@ function SectionSlider(options, undefined) {
         }
     }
 
-    function scrollTo(scrollValue, scrollSpeed, way) {
-        if (scrollValue == scrollToValue) {
+    function scrollTo(value, speed) {
+        var speed = speed || options.scrollSpeed;
+        var value = value;
+        if (value == scrollToValue) {
             return false;
         }
-        if (scrollWay == "next" && scrollValue < scrollTop()) {
+        if (scrollWay == "next" && value < scrollTop()) {
             return false;
         }
-        if (scrollWay == "prev" && scrollValue > scrollTop()) {
+        if (scrollWay == "prev" && value > scrollTop()) {
             return false;
         }
-        scrollToValue = scrollValue;
-        scrollSpeed = scrollSpeed || options.scrollSpeed;
-        scrollOptions['scrollTop'] = scrollValue + "px";
+        options['scrollTop'] = value + "px";
         $(scrolledElement).stop().animate(
-            scrollOptions
-            , scrollSpeed, easing);
+            options,
+            speed,
+            easing);
+        scrollToValue = value;
     }
 
     function scrollCenterPrev() {
@@ -162,6 +185,12 @@ function SectionSlider(options, undefined) {
     function scrollCenterNext() {
         var value = section.next.offset.top + (section.next.height / 2) - (clientHeight() / 2);
         scrollTo(value);
+        scrollState = "top";
+    }
+
+    function scrollCenterActive() {
+        var value = section.offset.top + (section.height / 2) - (clientHeight() / 2);
+        scrollTo(value, 0);
         scrollState = "top";
     }
 
@@ -177,6 +206,11 @@ function SectionSlider(options, undefined) {
         scrollState = "top";
     }
 
+    function scrollTopActive() {
+        var value = section.offset.top;
+        scrollTo(value, 0);
+        scrollState = "top";
+    }
 
     $(document).keydown(function (e) {
         switch (e.which) {
