@@ -4,11 +4,7 @@
 'use strict';
 
 (function (window, undefined) {
-    var sectionSlider = function (options) {
-        sectionSlider.options = options || {};
-        sectionSlider.init();
-    }
-    var sectionSlider = { },
+    var sectionSlider = {},
         elem = "",
         easing = "",
         resizeTime = "",
@@ -22,9 +18,13 @@
         scrollWay = "",
         sectionsFullScreen = false,
         scrollSpeed = 0,
-        displayedSection = {};
+        displayedSection = {},
+        activeMenuItem = "";
 
-    sectionSlider.options = {};
+    sectionSlider.options = function (options) {
+        sectionSlider.options = options || {};
+        sectionSlider.init();
+    }
 
     sectionSlider.init = function () {
         elem = sectionSlider.options.elem || "section";
@@ -33,9 +33,10 @@
         activeSelector = sectionSlider.options.activeSelector || "section-active";
         sectionsFullScreen = sectionSlider.options.sectionsFullScreen || false;
         scrollSpeed = sectionSlider.options.scrollSpeed || 400;
-        menu = sectionSlider.options.menu,
+        menu = sectionSlider.options.menu;
 
-            updateSectionHeight();
+        updateSectionHeight();
+        scrollHash();
     };
 
     sectionSlider.resize = function () {
@@ -58,6 +59,15 @@
 
     function scrollHappens() {
         sectionShows();
+        var sectionMenuItem = $(displayedSection).data('menu-item');
+        if (activeMenuItem != sectionMenuItem) {
+            $(activeMenuItem).removeClass("active");
+            activeMenuItem = sectionMenuItem;
+            window.history.pushState("text", "hello", activeMenuItem);
+        }
+        $(activeMenuItem).addClass("active");
+
+
         $(displayedSection).addClass(activeSelector).siblings().removeClass(activeSelector);
     }
 
@@ -134,7 +144,7 @@
             scrollCenterActive();
         }
 
-        scrollToValue = 0;
+        return false;
     }
 
     sectionSlider.scrollNext = function () {
@@ -180,6 +190,7 @@
             (scrollWay == "prev" && value > scrollTop())) {
             return false;
         }
+
         sectionSlider.options.scrollTop = value + "px";
         $(scrolledElement).stop().animate(
             sectionSlider.options,
@@ -245,6 +256,22 @@
             default:
                 break;
         }
+    });
+
+    function scrollHash() {
+        var value = window.location.hash.split('/');
+        var section = value[0];
+
+        $(elem).each(function () {
+            if ($(this).data('menu-item') == section) {
+                sectionSlider.scrollTo(this);
+                return;
+            }
+        });
+    }
+
+    $(window).on('hashchange', function () {
+        scrollHash();
     });
 
     $(window).resize(function () {

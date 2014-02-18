@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+      xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+      xmlns="http://www.w3.org/1999/html">
 <head>
     <title>sectionSLider</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
@@ -51,20 +53,27 @@
         .menu {
             position: fixed;
         }
+        a.active {
+            color: #6f9aff;
+            font-size: 38px;
+        }
     </style>
 </head>
 <body>
 <ul class="menu">
-    <button onclick="sectionSlider.scrollTo('#three')">Go to three</button>
+    <li><a id="section-1" href="#section-1">Section 1</a></li>
+    <li><a id="section-2" href="#section-222">Section 2</a></li>
+    <li><a id="section-3" href="#section-3">Section 3</a></li>
+    <li><a id="section-4" >Section 4</a></li>
 </ul>
-<section class="section-slider section-active one"></section>
-<section class="section-slider two"></section>
-<section class="section-slider three"></section>
-<section class="section-slider four"></section>
-<section class="section-slider five"></section>
-<section class="section-slider small-vary one"></section>
-<section class="section-slider small two"></section>
-<section class="section-slider big three"></section>
+<section data-menu-item="#section-1" class="section-slider section-active one"></section>
+<section data-menu-item="#section-2" class="section-slider two"></section>
+<section data-menu-item="#section-3" class="section-slider three"></section>
+<section data-menu-item="#section-4" class="section-slider four"></section>
+<section data-menu-item="#section-5" class="section-slider five"></section>
+<section data-menu-item="#section-6" class="section-slider small-vary one"></section>
+<section data-menu-item="#section-7" class="section-slider small two"></section>
+<section data-menu-item="#section-8" class="section-slider big three"></section>
 <section class="section-slider small-very four"></section>
 <section class="section-slider small five"></section>
 <section class="section-slider small-very one"></section>
@@ -85,8 +94,8 @@
 <section class="section-slider five"></section>
 <script>
     var sectionSlider;
-    $(document).ready(function () {
-        sectionSlider({
+    $(window).load(function () {
+        sectionSlider.options({
             elem: ".section-slider",
             easing: 'easeOutCubic',
             scrollSpeed: 600,
@@ -94,8 +103,7 @@
             menu: ".menu",
             sectionsFullScreen: true,
             activeSelector: "section-active"
-        })
-        sectionSlider.init();
+        });
     });
 </script>
 </body>
