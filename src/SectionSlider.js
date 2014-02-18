@@ -37,6 +37,13 @@
 
         updateSectionHeight();
         scrollHash();
+        scrollHappens();
+
+        $(menu +' a[href^=#]').on('click', function (e) {
+            e.preventDefault();
+            location.hash = $(this).attr('href');
+            $(window).trigger('hashchange');
+        });
     };
 
     sectionSlider.resize = function () {
@@ -63,7 +70,7 @@
         if (activeMenuItem != sectionMenuItem) {
             $(activeMenuItem).removeClass("active");
             activeMenuItem = sectionMenuItem;
-            window.history.pushState("text", "hello", activeMenuItem);
+            //window.history.pushState("text", "hello", activeMenuItem);
         }
         $(activeMenuItem).addClass("active");
 
@@ -184,7 +191,7 @@
     function scrollTo(value, speed) {
         var speed = speed || sectionSlider.options.scrollSpeed;
         var value = value;
-        if (value == scrollToValue ||
+        if (value == scrollToValue && scrollWay != "active" ||
             isNaN(value) ||
             (scrollWay == "next" && value < scrollTop()) ||
             (scrollWay == "prev" && value > scrollTop())) {
@@ -265,7 +272,6 @@
         $(elem).each(function () {
             if ($(this).data('menu-item') == section) {
                 sectionSlider.scrollTo(this);
-                return;
             }
         });
     }

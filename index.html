@@ -4,7 +4,8 @@
       xmlns="http://www.w3.org/1999/html">
 <head>
     <title>sectionSLider</title>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Happy+Monkey' rel='stylesheet' type='text/css'>
+    <script src="http://code.jquery.com/jquery-2.1.0.js"></script>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css"/>
     <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
     <script src="src/SectionSlider.js"></script>
@@ -39,7 +40,16 @@
         }
 
         .three {
-            background: #fff89b;
+            background: #fefcea; /* Old browsers */
+            /* IE9 SVG, needs conditional override of 'filter' to 'none' */
+            background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiA/Pgo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgdmlld0JveD0iMCAwIDEgMSIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPGxpbmVhckdyYWRpZW50IGlkPSJncmFkLXVjZ2ctZ2VuZXJhdGVkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIwJSIgeTI9IjEwMCUiPgogICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZlZmNlYSIgc3RvcC1vcGFjaXR5PSIxIi8+CiAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNmMWRhMzYiIHN0b3Atb3BhY2l0eT0iMSIvPgogIDwvbGluZWFyR3JhZGllbnQ+CiAgPHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEiIGhlaWdodD0iMSIgZmlsbD0idXJsKCNncmFkLXVjZ2ctZ2VuZXJhdGVkKSIgLz4KPC9zdmc+);
+            background: -moz-linear-gradient(top, #fefcea 0%, #f1da36 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fefcea), color-stop(100%,#f1da36)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top, #fefcea 0%,#f1da36 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top, #fefcea 0%,#f1da36 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top, #fefcea 0%,#f1da36 100%); /* IE10+ */
+            background: linear-gradient(to bottom, #fefcea 0%,#f1da36 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fefcea', endColorstr='#f1da36',GradientType=0 ); /* IE6-8 */
         }
 
         .four {
@@ -53,45 +63,45 @@
         .menu {
             position: fixed;
         }
-        a.active {
-            color: #6f9aff;
-            font-size: 38px;
+        .menu li {
+            list-style: none;
+        }
+        .menu a {
+            font-family: 'Happy Monkey', cursive;
+            font-size: 14px;
+            color: #000000;
+        }
+        .menu a.active {
+            opacity: 0.8;
+            font-size: 78px;
+            text-decoration: none;
+
         }
     </style>
 </head>
 <body>
 <ul class="menu">
-    <li><a id="section-1" href="#section-1">Section 1</a></li>
-    <li><a id="section-2" href="#section-222">Section 2</a></li>
-    <li><a id="section-3" href="#section-3">Section 3</a></li>
-    <li><a id="section-4" >Section 4</a></li>
+    <li><a id="section-1" href="#section-1">One section</a></li>
+    <li><a id="section-2" href="#section-2">Two section</a></li>
+    <li><a id="section-3" href="#section-3">Three section</a></li>
+    <li><a id="section-4" href="#section-4">Four section</a></li>
+    <li><a id="section-5" href="#section-5">Five section</a></li>
+    <li><a id="section-6" href="#section-6">Six section</a></li>
+    <li><a id="section-7" href="#section-7">Seven section</a></li>
+    <li><a id="section-8" href="#section-8">Eight section</a></li>
+    <li><a id="section-9" href="#section-9">Nine section</a></li>
+    <li><a id="section-10" href="#section-10">Ten section</a></li>
 </ul>
 <section data-menu-item="#section-1" class="section-slider section-active one"></section>
-<section data-menu-item="#section-2" class="section-slider two"></section>
+<section data-menu-item="#section-2" class="section-slider small-very two"></section>
 <section data-menu-item="#section-3" class="section-slider three"></section>
-<section data-menu-item="#section-4" class="section-slider four"></section>
+<section data-menu-item="#section-4" class="section-slider small four"></section>
 <section data-menu-item="#section-5" class="section-slider five"></section>
 <section data-menu-item="#section-6" class="section-slider small-vary one"></section>
 <section data-menu-item="#section-7" class="section-slider small two"></section>
 <section data-menu-item="#section-8" class="section-slider big three"></section>
-<section class="section-slider small-very four"></section>
-<section class="section-slider small five"></section>
-<section class="section-slider small-very one"></section>
-<section class="section-slider small two"></section>
-<section class="section-slider small-very four"></section>
-<section class="section-slider small-very five"></section>
-<section class="section-slider small-very one"></section>
-<section class="section-slider small two"></section>
-<section class="section-slider big five"></section>
-<section class="section-slider small one"></section>
-<section class="section-slider small three"></section>
-<section class="section-slider small four"></section>
-<section class="section-slider five"></section>
-<section class="section-slider one"></section>
-<section class="section-slider two"></section>
-<section id="three" class="section-slider three"></section>
-<section class="section-slider four"></section>
-<section class="section-slider five"></section>
+<section data-menu-item="#section-9" class="section-slider small-very four"></section>
+<section data-menu-item="#section-10" class="section-slider three five"></section>
 <script>
     var sectionSlider;
     $(window).load(function () {
