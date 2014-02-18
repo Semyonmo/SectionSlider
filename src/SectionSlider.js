@@ -39,7 +39,7 @@
         scrollHash();
         scrollHappens();
 
-        $(menu +' a[href^=#]').on('click', function (e) {
+        $(menu +' a[href^=]').on('click', function (e) {
             e.preventDefault();
             location.hash = $(this).attr('href');
             $(window).trigger('hashchange');
