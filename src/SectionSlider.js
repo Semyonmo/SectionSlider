@@ -16,10 +16,10 @@
         scrolledElement = 'html,body',
         section = {},
         scrollWay = "",
+        sectionsFullScreen = false,
         scrollSpeed = 0,
         displayedSection = {},
-        activeMenuItem = "",
-        fullScreenSections = [];
+        activeMenuItem = "";
 
     sectionSlider.options = function (options) {
         sectionSlider.options = options || {};
@@ -31,9 +31,9 @@
         easing = sectionSlider.options.easing || "linear";
         resizeTime = sectionSlider.options.resizeDelay || 50;
         activeSelector = sectionSlider.options.activeSelector || "section-active";
+        sectionsFullScreen = sectionSlider.options.sectionsFullScreen || false;
         scrollSpeed = sectionSlider.options.scrollSpeed || 400;
         menu = sectionSlider.options.menu;
-        fullScreenSections = sectionSlider.options.fullScreenSections || [];
 
         updateSectionHeight();
         scrollHash();
@@ -59,10 +59,8 @@
     }
 
     function updateSectionHeight() {
-        if ($(fullScreenSections).length > 0) {
-            $(fullScreenSections).each(function () {
-                $(this).height(clientHeight() + "px");
-            });
+        if (sectionSlider.options.sectionsFullScreen) {
+            $(elem).css("height", clientHeight() + "px");
         }
     }
 
@@ -75,6 +73,8 @@
             //window.history.pushState("text", "hello", activeMenuItem);
         }
         $(activeMenuItem).addClass("active");
+
+
         $(displayedSection).addClass(activeSelector).siblings().removeClass(activeSelector);
     }
 
@@ -201,7 +201,8 @@
         sectionSlider.options.scrollTop = value + "px";
         $(scrolledElement).stop().animate(
             sectionSlider.options,
-            speed);
+            speed,
+            easing);
         scrollToValue = value;
     }
 
