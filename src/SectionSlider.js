@@ -1,25 +1,25 @@
 /**
- * Created by semyon on 14.02.14.
+ * Created by Semyon Morozov jsemyonom@gmail.com  on 14.02.14.
  */
-'use strict';
+
 
 (function (window, undefined) {
+    'use strict';
     var sectionSlider = {},
         elem = "",
         easing = "",
         resizeTime = "",
         activeSelector = "",
         timeoutID = null,
-        scrollToValue = 0,
+        scrollToValue = null,
         menu = "",
-        scrollState = "top",
         scrolledElement = 'html,body',
         section = {},
         scrollWay = "",
         scrollSpeed = 0,
         displayedSection = {},
         activeMenuItem = "",
-        fullScreenSections = [];
+        fullScreenSelector = [];
 
     sectionSlider.options = function (options) {
         sectionSlider.options = options || {};
@@ -27,19 +27,19 @@
     }
 
     sectionSlider.init = function () {
-        elem = sectionSlider.options.elem || "section";
+        elem = sectionSlider.options.elem || ".section";
         easing = sectionSlider.options.easing || "linear";
         resizeTime = sectionSlider.options.resizeDelay || 50;
         activeSelector = sectionSlider.options.activeSelector || "section-active";
         scrollSpeed = sectionSlider.options.scrollSpeed || 400;
         menu = sectionSlider.options.menu;
-        fullScreenSections = sectionSlider.options.fullScreenSections || [];
+        fullScreenSelector = sectionSlider.options.fullScreenSelector || [];
 
         updateSectionHeight();
         scrollHash();
         scrollHappens();
 
-        $(menu +' a').on('click', function (e) {
+        $(menu + ' a').on('click', function (e) {
             e.preventDefault();
             location.hash = $(this).attr('href');
             $(window).trigger('hashchange');
@@ -48,6 +48,22 @@
 
     sectionSlider.resize = function () {
         updateSectionHeight();
+    }
+
+    function getScrollState() {
+        if (scrollTop() === section.offset.top) {
+            return "top";
+        }
+        if (scrollTop() + clientHeight() === section.offset.top + section.height) {
+            return "bottom"
+        }
+        if (scrollTop() + clientHeight() > section.offset.top + section.height) {
+            return "out";
+        }
+        if (scrollTop() < section.offset.top) {
+            return "prev";
+        }
+        return "enter";
     }
 
     function clientHeight() {
@@ -59,28 +75,25 @@
     }
 
     function updateSectionHeight() {
-        if ($(fullScreenSections).length > 0) {
-            $(fullScreenSections).each(function () {
-                $(this).height(clientHeight() + "px");
-            });
-        }
+        $(fullScreenSelector).css("min-height", clientHeight() + "px");
     }
 
     function scrollHappens() {
         sectionShows();
         var sectionMenuItem = $(displayedSection).data('menu-item');
-        if (activeMenuItem != sectionMenuItem) {
+        if (activeMenuItem !== sectionMenuItem) {
             $(activeMenuItem).removeClass("active");
             activeMenuItem = sectionMenuItem;
             //window.history.pushState("text", "hello", activeMenuItem);
+            scrollToValue = null;
         }
         $(activeMenuItem).addClass("active");
         $(displayedSection).addClass(activeSelector).siblings().removeClass(activeSelector);
     }
 
-    sectionSlider.scrollTo = function (selector) {
+    sectionSlider.scrollTo = function ($selector) {
         sectionShows();
-        $(selector).addClass(activeSelector).siblings().removeClass(activeSelector);
+        $selector.addClass(activeSelector).siblings().removeClass(activeSelector);
         sectionSlider.scrollActive();
     }
 
@@ -120,27 +133,24 @@
 
     sectionSlider.scrollPrev = function () {
         sectionsParse();
-
         scrollWay = "prev";
 
-        if (scrollState == "bottom" && section.height > clientHeight()) {
-            scrollInternalPrev();
+        if (getScrollState() !== "top" && getScrollState() !== "prev" &&  section.height > clientHeight()) {
+            scrollInternalTop();
             return false;
         }
 
-        if (scrollState == "bottom" || scrollState == "top") {
-            if (section.prev.height <= clientHeight()) {
-                scrollCenterPrev();
-            } else {
-                scrollTopPrev();
-            }
-            return false;
+        if (section.prev.height <= clientHeight()) {
+            scrollCenterPrev();
+        } else {
+            scrollTopPrev();
         }
+
+        return false;
     }
 
     sectionSlider.scrollActive = function () {
         sectionsParse();
-
         scrollWay = "active";
 
         if (section.height > clientHeight()) {
@@ -156,89 +166,92 @@
 
     sectionSlider.scrollNext = function () {
         sectionsParse();
-
         scrollWay = "next";
 
-        if (scrollState == "top" && section.height > clientHeight()) {
+        if (getScrollState() !== "bottom" && getScrollState() !== "out" && section.height > clientHeight()) {
             scrollInternalNext();
             return false;
         }
 
-        if (scrollState == "bottom" || scrollState == "top") {
-            if (section.next.height <= clientHeight()) {
-                scrollCenterNext();
-            } else {
-                scrollTopNext();
-            }
-            return false;
+        if (section.next.height <= clientHeight()) {
+            scrollCenterNext();
+        } else {
+            scrollTopNext();
         }
+
+        return false;
     }
 
-    function scrollInternalPrev() {
-        if (scrollState == "bottom") {
-            scrollTo(section.offset.top, sectionSlider.options.scrollSpeed / 3);
-            scrollState = "top";
-        }
+    function scrollInternalTop() {
+        scrollTo(section.offset.top, scrollSpeed);
     }
 
     function scrollInternalNext() {
-        if (scrollState == "top") {
-            scrollTo(section.offset.top + section.height - clientHeight(), sectionSlider.options.scrollSpeed / 3);
-            scrollState = "bottom";
-        }
+        scrollTo(section.offset.top + section.height - clientHeight(), scrollSpeed);
     }
 
     function scrollTo(value, speed) {
-        var speed = speed || sectionSlider.options.scrollSpeed;
-        var value = value;
-        if (value == scrollToValue && scrollWay != "active" ||
+        speed = speed || 0;
+        if (scrollToValue === value ||
             isNaN(value) ||
-            (scrollWay == "next" && value < scrollTop()) ||
-            (scrollWay == "prev" && value > scrollTop())) {
+            (scrollWay === "next" && value < scrollTop()) ||
+            (scrollWay === "prev" && value > scrollTop())
+            ) {
             return false;
         }
 
+        scrollAnimate(value, speed);
+    }
+
+    function scrollAnimate(value, speed) {
         sectionSlider.options.scrollTop = value + "px";
         $(scrolledElement).stop().animate(
-            sectionSlider.options,
-            speed);
+            sectionSlider.options, {
+                duration: speed,
+                always: function () {
+                    scrollToValue = null;
+                },
+                complete: function () {
+                    scrollToValue = null;
+                },
+                fail: function () {
+                    scrollToValue = null;
+                },
+                done: function () {
+                    scrollToValue = null;
+                }
+            });
         scrollToValue = value;
     }
 
     function scrollCenterPrev() {
         var value = section.prev.offset.top + (section.prev.height / 2) - (clientHeight() / 2);
-        scrollTo(value);
-        scrollState = "top";
+        scrollTo(value, scrollSpeed);
     }
 
     function scrollCenterNext() {
         var value = section.next.offset.top + (section.next.height / 2) - (clientHeight() / 2);
-        scrollTo(value);
-        scrollState = "top";
+        scrollTo(value, scrollSpeed);
     }
 
     function scrollCenterActive() {
         var value = section.offset.top + (section.height / 2) - (clientHeight() / 2);
-        scrollTo(value, 0);
-        scrollState = "top";
+        scrollTo(value);
     }
 
     function scrollTopPrev() {
         var value = section.prev.offset.top;
-        scrollTo(value);
-        scrollState = "top";
+        scrollTo(value, scrollSpeed);
     }
 
     function scrollTopNext() {
         var value = section.next.offset.top;
-        scrollTo(value);
-        scrollState = "top";
+        scrollTo(value, scrollSpeed);
     }
 
     function scrollTopActive() {
         var value = section.offset.top;
-        scrollTo(value, 0);
-        scrollState = "top";
+        scrollTo(value);
     }
 
     $(document).keydown(function (e) {
@@ -248,16 +261,18 @@
             case 33:
             {
                 sectionSlider.scrollPrev();
-                return false;
+                e.preventDefault();
                 break;
+//                return;
             }
             //down key press
             case 40:
             case 34:
             {
                 sectionSlider.scrollNext();
-                return false;
+                e.preventDefault();
                 break;
+//                return;
             }
             default:
                 break;
@@ -266,11 +281,13 @@
 
     function scrollHash() {
         var value = window.location.hash.split('/');
-        var section = value[0];
+        var section = value[0].replace("#", ".");
 
+        //sectionSlider.scrollTo($(elem+section).first());
         $(elem).each(function () {
-            if ($(this).data('menu-item') == section) {
-                sectionSlider.scrollTo(this);
+            if ($(this).data('menu-item') === section) {
+                sectionSlider.scrollTo($(this));
+                return false;
             }
         });
     }

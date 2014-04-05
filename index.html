@@ -8,30 +8,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href='http://fonts.googleapis.com/css?family=Happy+Monkey' rel='stylesheet' type='text/css'>
-    <script src="http://code.jquery.com/jquery-2.1.0.js"></script>
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css"/>
-    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-    <script src="src/SectionSlider.js"></script>
     <style>
         body {
             margin: 0;
             padding: 0;
         }
 
-        .section-slider {
-            height: 600px;
-        }
-
-        .small {
-            height: 300px !important;
-        }
-
-        .small-very {
-            height: 70px !important;
-        }
-
-        .big {
-            height: 1200px !important;
+        .section {
+            height: 2500px;
         }
 
         .one {
@@ -40,6 +25,7 @@
 
         .two {
             background: #d488ff;
+            height: 300px;
         }
 
         .four {
@@ -79,27 +65,24 @@
 </head>
 <body>
 <ul class="menu">
-    <li><a id="section-1" href="#section-1">One section</a></li>
-    <li><a id="section-2" href="#section-2">Two section</a></li>
-    <li><a id="section-3" href="#section-3">Three section</a></li>
-    <li><a id="section-4" href="#section-4">Four section</a></li>
-    <li><a id="section-5" href="#section-5">Five section</a></li>
-    <li><a id="section-6" href="#section-6">Six section</a></li>
-    <li><a id="section-7" href="#section-7">Seven section</a></li>
-    <li><a id="section-8" href="#section-8">Eight section</a></li>
-    <li><a id="section-9" href="#section-9">Nine section</a></li>
-    <li><a id="section-10" href="#section-10">Ten section</a></li>
+    <li><a  href="#one" class="one">One section</a></li>
+    <li><a  href="#two" class="two">Two section</a></li>
+    <li><a  href="#three" class="three">Three section</a></li>
+    <li><a  href="#four" class="four">Four section</a></li>
+    <li><a  href="#five" class="five">Five section</a></li>
 </ul>
-<section data-menu-item="#section-1" class="section-slider section-active one"></section>
-<section data-menu-item="#section-2" class="section-slider small-very two"></section>
-<section data-menu-item="#section-3" class="section-slider three img-slider"></section>
-<section data-menu-item="#section-4" class="section-slider small four"></section>
-<section data-menu-item="#section-5" class="section-slider five"></section>
-<section data-menu-item="#section-6" class="section-slider small-vary one"></section>
-<section data-menu-item="#section-7" class="section-slider small two"></section>
-<section data-menu-item="#section-8" class="section-slider big three img-slider"></section>
-<section data-menu-item="#section-9" class="section-slider small-very four"></section>
-<section data-menu-item="#section-10" class="section-slider three five"></section>
+<section data-menu-item=".one" class="section section-slider img-slider"></section>
+<section data-menu-item=".one" class="section section-slider img-slider"></section>
+<section data-menu-item=".two" class="section section-slider img-slider"></section>
+<section data-menu-item=".three" class="section section-slider img-slider"></section>
+<section data-menu-item=".four" class="section section-slider img-slider"></section>
+<section data-menu-item=".five" class="section section-slider img-slider"></section>
+
+<!--scripts-->
+<script src="bower_components/jquery/dist/jquery.min.js"></script>
+<script src="src/sectionSlider.js"></script>
+<!--scripts-end-->
+
 <script>
     var sectionSlider;
     $(window).load(function () {
@@ -111,7 +94,7 @@
             menu: ".menu",
             sectionsFullScreen: true,
             activeSelector: "section-active",
-            fullScreenSections: ['section-works','section-logo','section-contacts']
+            fullScreenSelector: ''
         });
     });
 </script>
