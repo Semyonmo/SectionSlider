@@ -40,6 +40,7 @@
         scrollHappens();
 
         $(menu + ' a').on('click', function (e) {
+            scrollToValue = null;
             e.preventDefault();
             location.hash = $(this).attr('href');
             $(window).trigger('hashchange');
@@ -58,12 +59,12 @@
             return "bottom"
         }
         if (scrollTop() + clientHeight() > section.offset.top + section.height) {
-            return "out";
+            return "after"; //out
         }
         if (scrollTop() < section.offset.top) {
-            return "prev";
+            return "before"; //prev
         }
-        return "enter";
+        return "inside"; //enter
     }
 
     function clientHeight() {
@@ -85,7 +86,7 @@
             $(activeMenuItem).removeClass("active");
             activeMenuItem = sectionMenuItem;
             //window.history.pushState("text", "hello", activeMenuItem);
-            scrollToValue = null;
+            //scrollToValue = null;
         }
         $(activeMenuItem).addClass("active");
         $(displayedSection).addClass(activeSelector).siblings().removeClass(activeSelector);
@@ -133,9 +134,14 @@
 
     sectionSlider.scrollPrev = function () {
         sectionsParse();
-        scrollWay = "prev";
+        scrollWay = "back";
 
-        if (getScrollState() !== "top" && getScrollState() !== "prev" &&  section.height > clientHeight()) {
+        if (getScrollState() === "after") {
+            scrollInternalBottom();
+            return false;
+        }
+
+        if (getScrollState() !== "top" && getScrollState() !== "before" && section.height > clientHeight()) {
             scrollInternalTop();
             return false;
         }
@@ -143,7 +149,7 @@
         if (section.prev.height <= clientHeight()) {
             scrollCenterPrev();
         } else {
-            scrollTopPrev();
+            scrollBottomPrev();
         }
 
         return false;
@@ -168,8 +174,13 @@
         sectionsParse();
         scrollWay = "next";
 
-        if (getScrollState() !== "bottom" && getScrollState() !== "out" && section.height > clientHeight()) {
-            scrollInternalNext();
+        if (getScrollState() === "before") {
+            scrollInternalTop();
+            return false;
+        }
+
+        if (getScrollState() !== "bottom" && getScrollState() !== "after" && section.height > clientHeight()) {
+            scrollInternalBottom();
             return false;
         }
 
@@ -186,16 +197,17 @@
         scrollTo(section.offset.top, scrollSpeed);
     }
 
-    function scrollInternalNext() {
+    function scrollInternalBottom() {
         scrollTo(section.offset.top + section.height - clientHeight(), scrollSpeed);
     }
 
     function scrollTo(value, speed) {
         speed = speed || 0;
+        //console.log(value + " "+ scrollToValue);
         if (scrollToValue === value ||
             isNaN(value) ||
             (scrollWay === "next" && value < scrollTop()) ||
-            (scrollWay === "prev" && value > scrollTop())
+            (scrollWay === "back" && value > scrollTop())
             ) {
             return false;
         }
@@ -241,6 +253,11 @@
 
     function scrollTopPrev() {
         var value = section.prev.offset.top;
+        scrollTo(value, scrollSpeed);
+    }
+
+    function scrollBottomPrev() {
+        var value = section.prev.offset.top + section.prev.height - clientHeight();
         scrollTo(value, scrollSpeed);
     }
 
