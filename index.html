@@ -16,6 +16,10 @@
         }
 
         .section {
+            height: 500px;
+        }
+
+        .a {
             height: 2500px;
         }
 
@@ -39,6 +43,7 @@
         .menu {
             position: fixed;
         }
+
         .menu li {
             list-style: none;
         }
@@ -65,18 +70,38 @@
 </head>
 <body>
 <ul class="menu">
-    <li><a  href="#one" class="one">One section</a></li>
-    <li><a  href="#two" class="two">Two section</a></li>
-    <li><a  href="#three" class="three">Three section</a></li>
-    <li><a  href="#four" class="four">Four section</a></li>
-    <li><a  href="#five" class="five">Five section</a></li>
+    <li><a href="#one" class="one">One section</a></li>
+    <li><a href="#two" class="two">Two section</a></li>
+    <li><a href="#three" class="three">Three section</a></li>
+    <li><a href="#four" class="four">Four section</a></li>
+    <li><a href="#five" class="five">Five section</a></li>
 </ul>
+
+<section data-menu-item=".one" class="section section-slider a img-slider"></section>
+<section data-menu-item=".one" class="section section-slider img-slider"></section>
+<section data-menu-item=".two" class="section section-slider img-slider"></section>
+<section data-menu-item=".three" class="section section-slider a img-slider"></section>
+<section data-menu-item=".four" class="section section-slider a img-slider"></section>
+<section data-menu-item=".five" class="section section-slider img-slider"></section>
+<section data-menu-item=".one" class="section section-slider img-slider"></section>
+<section data-menu-item=".one" class="section section-slider a img-slider"></section>
+<section data-menu-item=".two" class="section section-slider img-slider"></section>
+<section data-menu-item=".three" class="section section-slider a img-slider"></section>
+<section data-menu-item=".four" class="section section-slider img-slider"></section>
+<section data-menu-item=".five" class="section section-slider img-slider"></section>
 <section data-menu-item=".one" class="section section-slider img-slider"></section>
 <section data-menu-item=".one" class="section section-slider img-slider"></section>
 <section data-menu-item=".two" class="section section-slider img-slider"></section>
 <section data-menu-item=".three" class="section section-slider img-slider"></section>
 <section data-menu-item=".four" class="section section-slider img-slider"></section>
 <section data-menu-item=".five" class="section section-slider img-slider"></section>
+<section data-menu-item=".one" class="section section-slider img-slider"></section>
+<section data-menu-item=".one" class="section section-slider img-slider"></section>
+<section data-menu-item=".two" class="section section-slider img-slider"></section>
+<section data-menu-item=".three" class="section section-slider img-slider"></section>
+<section data-menu-item=".four" class="section section-slider img-slider"></section>
+<section data-menu-item=".five" class="section section-slider img-slider"></section>
+
 
 <!--scripts-->
 <script src="bower_components/jquery/dist/jquery.min.js"></script>
@@ -89,7 +114,7 @@
         sectionSlider.options({
             elem: ".section-slider",
             easing: 'easeOutCubic',
-            scrollSpeed: 100,
+            scrollSpeed: 1000,
             resizeDelay: 50,
             menu: ".menu",
             sectionsFullScreen: true,

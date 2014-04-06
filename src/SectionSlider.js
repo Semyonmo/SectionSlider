@@ -136,7 +136,14 @@
         sectionsParse();
         scrollWay = "back";
 
-        if (getScrollState() === "after") {
+        if (getScrollState() === "after"
+            && section.offset.top < scrollTop()
+            && section.height < clientHeight()) {
+            scrollInternalCenter();
+            return false;
+        }
+
+        if (getScrollState() === "after" && section.height > clientHeight()) {
             scrollInternalBottom();
             return false;
         }
@@ -174,7 +181,14 @@
         sectionsParse();
         scrollWay = "next";
 
-        if (getScrollState() === "before") {
+        if (getScrollState() === "before"
+            && section.offset.top + section.height > scrollTop() + clientHeight()
+            && section.height < clientHeight()) {
+            scrollInternalCenter();
+            return false;
+        }
+
+        if (getScrollState() === "before" && section.height > clientHeight()) {
             scrollInternalTop();
             return false;
         }
@@ -249,6 +263,11 @@
     function scrollCenterActive() {
         var value = section.offset.top + (section.height / 2) - (clientHeight() / 2);
         scrollTo(value);
+    }
+
+    function scrollInternalCenter() {
+        var value = section.offset.top + (section.height / 2) - (clientHeight() / 2);
+        scrollTo(value, scrollSpeed);
     }
 
     function scrollTopPrev() {
